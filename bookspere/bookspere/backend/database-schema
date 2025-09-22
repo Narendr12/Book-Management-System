@@ -1,0 +1,44 @@
+CREATE DATABASE IF NOT EXISTS `booksphere_db`;
+
+USE `booksphere_db`;
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `books` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `seller_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `author` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `condition` enum('New','Used - Like New','Used - Good','Used - Acceptable') NOT NULL,
+  `category` varchar(100) NOT NULL,
+  `cover_image` varchar(255) DEFAULT NULL,
+  `status` enum('Listed','Sold') NOT NULL DEFAULT 'Listed',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `seller_id` (`seller_id`),
+  CONSTRAINT `books_ibfk_1` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `buyer_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `order_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `buyer_id` (`buyer_id`),
+  KEY `book_id` (`book_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
